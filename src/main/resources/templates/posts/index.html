@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <header th:insert="partials :: head"></header>
+    <title>All Posts</title>
+</head>
+
+<body>
+<nav th:replace="partials :: navbar">
+</nav>
+
+<div class="container-fluid">
+
+
+<h1>All Posts</h1>
+
+    <a href="/posts/create" >Add a new post</a>
+
+<table class="mt-3 table table-striped">
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Body</th>
+    </tr>
+    </thead>
+    <tr th:each="post : ${posts}">
+        <td>
+<!--            <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}"></a>-->
+            <a th:href="@{|/posts/${post.id}|}" th:text="${post.title}"></a>
+        </td>
+        <td th:text="${post.body}"></td>
+    </tr>
+</table>
+
+
+<footer th:replace="partials :: footer">
+</footer>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <header th:insert="partials :: head"></header>
+    <title>Create Post</title>
+</head>
+
+<body>
+<nav th:replace="partials :: navbar">
+</nav>
+
+<div class="container-fluid">
+    <h1>Create Post</h1>
+
+    <form action="/posts/create" method="post" th:object="${post}">
+        <input type="hidden" id="id" th:field="*{id}">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" th:field="*{title}" placeholder="Title goes here">
+        </div>
+        <div class="mb-3">
+            <label for="creator-email" class="form-label">Creator</label>
+            <input type="text" class="form-control" id="creator-email" disabled th:field="*{creator.email}">
+        </div>
+        <div class="mb-3">
+            <label for="body" class="form-label">Body</label>
+            <textarea class="form-control" id="body" th:field="*{body}" rows="3" placeholder="Body goes here"></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary">Save</button>
+
+    </form>
+
+    <footer th:replace="partials :: footer">
+    </footer>
+
+</div>
+
+
+</body>
+</html>

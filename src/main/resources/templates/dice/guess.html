@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="partials :: head">
+
+<body>
+<nav th:replace="partials :: navbar">
+</nav>
+
+<h1>You guessed <span th:text="${guess}">(insert guess here)</span></h1>
+<h1>The answer is <span th:text="${answer}">(insert guess here)</span></h1>
+
+<!--<h1 th:text="${guess == answer} ? 'You guessed it!' : 'Sorry, you lost!'">{insert answer here}>(did you win? no idea.</h1>-->
+<h1 th:text="${winMsg}">(insert win result here)</h1>
+
+<hr>
+
+<!--bonus-->
+<h2>Multiple rolls</h2>
+<div th:each="roll : ${rolls}">
+    <p>
+        Roll was <span th:text="${roll}"></span>. Did you guess it? <span th:text="${roll == guess}"></span>
+    </p>
+</div>
+<footer th:replace="partials :: footer">
+</footer>
+
+</body>
+</html>
