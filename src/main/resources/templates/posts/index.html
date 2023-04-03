@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <header th:insert="partials :: head"></header>
@@ -12,24 +12,32 @@
 
 <div class="container-fluid">
 
-
 <h1>All Posts</h1>
-
-    <a href="/posts/create" >Add a new post</a>
 
 <table class="mt-3 table table-striped">
     <thead>
     <tr>
         <th>Title</th>
         <th>Body</th>
+        <th></th>
+        <th></th>
     </tr>
     </thead>
     <tr th:each="post : ${posts}">
         <td>
-<!--            <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}"></a>-->
             <a th:href="@{|/posts/${post.id}|}" th:text="${post.title}"></a>
         </td>
         <td th:text="${post.body}"></td>
+        <td th:if="${userName == post.creator.name}">
+            <a th:href="@{|/posts/${post.id}/edit|}">Edit</a>
+        </td>
+        <td th:if="${userName == post.creator.name}">
+            <a th:href="@{|/posts/${post.id}/delete|}">Delete</a>
+        </td>
+<!--        <td th:if="${userName != post.creator.name}">-->
+<!--        </td>-->
+<!--        <td th:if="${userName != post.creator.name}">-->
+<!--        </td>-->
     </tr>
 </table>
 

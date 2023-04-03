@@ -1,12 +1,14 @@
 package docrob.ymirspringblog.controllers;
 
+import docrob.ymirspringblog.misc.LoginFunctions;
 import docrob.ymirspringblog.models.Post;
 import docrob.ymirspringblog.models.User;
 import docrob.ymirspringblog.repositories.PostRepository;
-import docrob.ymirspringblog.repositories.UsersRepository;
+import docrob.ymirspringblog.repositories.UserRepository;
 import docrob.ymirspringblog.services.EmailService;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,21 +18,27 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "/posts")
 public class PostController {
     private final PostRepository postDao;
-    private final UsersRepository userDao;
+    private final UserRepository userDao;
     private final EmailService emailService;
 
     @GetMapping
     public String allPosts(@RequestParam @Nullable String search, Model model) {
+        model.addAttribute("userNameLabel", LoginFunctions.getLoggedInUserNameMenuLabel());
+        model.addAttribute("userName", LoginFunctions.getLoggedInUserName());
+
         if(search != null) {
             model.addAttribute("posts", postDao.findByTitle(search));
         } else {
             model.addAttribute("posts", postDao.findAll());
         }
+        model.addAttribute("selectedPage", "posts");
         return "posts/index";
     }
 
     @GetMapping("/{postId}")
     public String onePost(@PathVariable long postId, Model model) {
+        model.addAttribute("userNameLabel", LoginFunctions.getLoggedInUserNameMenuLabel());
+
         Post post = postDao.findById(postId).get();
         model.addAttribute("post", post);
         return "posts/show";
@@ -38,13 +46,27 @@ public class PostController {
 
     @GetMapping("/{postId}/edit")
     public String editOnePost(@PathVariable long postId, Model model) {
+        String loggedInUserName = LoginFunctions.getLoggedInUserName();
+        model.addAttribute("userNameLabel", loggedInUserName);
+
         Post post = postDao.findById(postId).get();
+
+        if(!loggedInUserName.equals(post.getCreator().getName())) {
+            return "redirect:/denied";
+        }
+        model.addAttribute("title", "Edit Post");
         model.addAttribute("post", post);
         return "posts/create";
     }
 
     @GetMapping("/{postId}/delete")
     public String deleteOnePost(@PathVariable long postId, Model model) {
+        String loggedInUserName = LoginFunctions.getLoggedInUserName();
+        Post post = postDao.findById(postId).get();
+        if(!loggedInUserName.equals(post.getCreator().getName())) {
+            return "redirect:/denied";
+        }
+
         postDao.deleteById(postId);
         return "redirect:/posts";
     }
@@ -65,23 +87,25 @@ public class PostController {
 
     @GetMapping("/create")
     public String showCreatePostForm(Model model) {
+        model.addAttribute("userNameLabel", LoginFunctions.getLoggedInUserNameMenuLabel());
+
         Post post = new Post();
         post.setTitle("Test post");
         post.setBody("Test post body");
 
-        User creator = userDao.findById(1L).get();
+        User creator = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         post.setCreator(creator);
 
         model.addAttribute("post", post);
+        model.addAttribute("title", "Create Post");
+        model.addAttribute("selectedPage", "posts-create");
         return "posts/create";
     }
 
     @PostMapping("/create")
     public String addPost(@ModelAttribute Post post) {
-//        System.out.println(post);
-
         // set the creator to bob w id 1 for now
-        User creator = userDao.findById(1L).get();
+        User creator = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         post.setCreator(creator);
 
         // save to dao

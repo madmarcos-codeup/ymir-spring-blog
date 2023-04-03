@@ -29,4 +29,16 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator")
     @ToString.Exclude
     private List<Post> posts;
+
+    public User(User copy) {
+        id = copy.id;
+        email = copy.email;
+        name = copy.name;
+        password = copy.password;
+    }
+
+    public String getUsername() {
+        return name;
+    }
+
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <header th:insert="partials :: head"></header>
@@ -13,10 +13,6 @@
 <div class="container-fluid">
 
 <h1 th:text="${post.title}">(insert post title here)</h1>
-
-    <a th:href="@{/posts/{id}/edit(id=${post.id})}" >Edit this post</a>
-
-    <a th:href="@{/posts/{id}/delete(id=${post.id})}" >Delete this post</a>
 
     <h6 name="creator-email" id="creator-email" th:text="${post.creator.email}" class="mt-3">(insert creator email here)</h6>
 

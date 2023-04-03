@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <header th:insert="partials :: head"></header>
@@ -11,9 +11,9 @@
 </nav>
 
 <div class="container-fluid">
-    <h1>Create Post</h1>
+    <h1 th:text="${title}">insert title here</h1>
 
-    <form action="/posts/create" method="post" th:object="${post}">
+    <form class="mb-3" th:action="@{/posts/create}" th:method="post" th:object="${post}">
         <input type="hidden" id="id" th:field="*{id}">
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
@@ -28,7 +28,7 @@
             <textarea class="form-control" id="body" th:field="*{body}" rows="3" placeholder="Body goes here"></textarea>
         </div>
 
-        <button type="submit" class="btn-primary">Save</button>
+        <button type="submit" class="btn btn-primary">Save Post</button>
 
     </form>
 
