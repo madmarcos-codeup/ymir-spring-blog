@@ -51,14 +51,15 @@ public class SecurityConfiguration {
                 .requestMatchers(
                         "/posts/create",
                         "/posts/{id}/edit",
-                        "/posts/{id}/delete"
+                        "/posts/{id}/delete",
+                        "/files/**"
                 )
                 .authenticated()
 
                 /* Pages that can be viewed without having to log in */
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/", "/denied", "/posts", "/posts/{id}", "/sign-up", "/css/**", "/js/**") // anyone can see home, the ads pages, and sign up
+                .requestMatchers("/", "/denied", "/posts", "/posts/{id}", "/sign-up", "/css/**", "/js/**", "/keys.js") // anyone can see home, the ads pages, and sign up
                 .permitAll()
 
         ;

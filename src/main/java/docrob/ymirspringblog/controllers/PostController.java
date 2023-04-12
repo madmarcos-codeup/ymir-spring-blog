@@ -13,6 +13,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+
 @AllArgsConstructor
 @Controller
 @RequestMapping(path = "/posts")
@@ -23,6 +29,21 @@ public class PostController {
 
     @GetMapping
     public String allPosts(@RequestParam @Nullable String search, Model model) {
+//        try {
+//            URL url = new URL("https://www.themealdb.com/api/json/v1/1/lookup.php?i=53065");
+//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//            connection.setDoOutput(true);
+//            connection.setRequestProperty("Content-Type","text/plain");
+//            connection.setRequestMethod("GET");
+////            connection.getOutputStream().write(pic);
+//            connection.getResponseCode();
+//            String jsonResponse = new String(connection.getInputStream().readAllBytes());
+//            System.out.println("HTTP response code is " + connection.getResponseCode());
+//            System.out.println(jsonResponse);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
         model.addAttribute("userNameLabel", LoginFunctions.getLoggedInUserNameMenuLabel());
         model.addAttribute("userName", LoginFunctions.getLoggedInUserName());
 

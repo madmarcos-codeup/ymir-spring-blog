@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <header th:insert="partials :: head"></header>
+    <title>Upload File</title>
+</head>
+<body>
+<nav th:replace="partials :: navbar">
+</nav>
+
+<div class="container-fluid">
+  <form class="mb-3" th:action="@{/files/create}" th:method="post" th:object="${myFile}">
+      <input type="hidden" id="id" th:field="*{id}">
+      <input type="hidden" class="form-control" id="fileName" th:field="*{fileName}">
+      <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+
+          <textarea class="form-control" id="description" th:field="*{description}" rows="3" placeholder="Description goes here">put stuff here</textarea>
+      </div>
+
+<!--      TODO: hide this eventually-->
+      <input disabled id="upload-url" type="text" class="form-control">
+
+      <div class="mb-3">
+          <label for="fileInput" class="form-label">Choose a file:</label>
+
+          <input disabled type="file" class="form-control" id="fileInput" name="fileInput" accept="image/png, image/jpeg, image/gif">
+
+          <div class="mt-1 ms-3">
+            <label for="uploadProgress" class="form-label">Upload progress:</label>
+            <input disabled type="text" id="uploadProgress" name="uploadProgress">
+            <button disabled type="button" id="cancelUpload" class="btn btn-info" name="cancelUpload">Cancel</button>
+          </div>
+      </div>
+
+      <button disabled type="submit" id="submitButton" class="btn btn-primary">Save File</button>
+  </form>
+
+    <footer th:replace="partials :: footer">
+    </footer>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // document.querySelector("#submitButton").disabled = false;
+        document.querySelector("#fileInput").disabled = false;
+
+        document.querySelector("#fileInput").addEventListener("change", async function (event) {
+            // TODO: determine file's mime type
+            const mimeType = event.target.files[0].type;
+
+            const presignedURL = await getPresignedURL(mimeType);
+            //can't do anything until we get a presigned url
+            document.querySelector("#upload-url").value = presignedURL.url;
+
+            document.querySelector("#cancelUpload").disabled = false;
+            // cannot change a file until file finishes uploading or cancel is clicked
+            document.querySelector("#fileInput").disabled = true;
+
+            const url = document.querySelector("#upload-url").value;
+            console.log("Uploading " + this.value + " to " + url);
+            uploadFile(event.target.files[0], mimeType);
+        })
+    });
+
+    async function uploadFile(file, mimeType) {
+        const url = document.querySelector("#upload-url").value;
+        await fetch(url, {
+            method: "PUT",
+            headers:
+                {
+                    'Content-Type': mimeType
+                },
+            body: file
+        }).then(function(response) {
+            console.log("response code is " + response.status);
+            document.querySelector("#submitButton").disabled = false;
+        });
+        // const reader = new FileReader()
+        // reader.onload = handleFileRead;
+        // reader.readAsBinaryString(file);
+    }
+
+    // async function handleFileRead(event) {
+    //     console.log(event.target.result);
+    //     const url = document.querySelector("#upload-url").value;
+    //     await fetch(url, {
+    //         method: "PUT",
+    //         headers:
+    //             {
+    //                 'Content-Type': 'image/gif'
+    //             },
+    //         body: event.target.result
+    //     }).then(function(response) {
+    //         console.log("response code is " + response.status);
+    //         document.querySelector("#submitButton").disabled = false;
+    //     });
+    // }
+
+    function getPresignedURL(mimeType) {
+        const url = `/files/presign?mimeType=` + mimeType;
+        return fetch(url)
+            .then(function(response) {
+                return response.json();
+        }).then(function(jsonResponse) {
+            return jsonResponse;
+        });
+    }
+
+</script>
+</body>
+</html>

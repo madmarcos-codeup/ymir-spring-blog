@@ -9,16 +9,12 @@ import lombok.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "posts")
-public class Post {
+@Table(name = "files")
+public class MyFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String title;
-    private String body;
-
-    @ManyToOne
-    private User creator;
-
+    private String fileName;
+    private String description;
 }
