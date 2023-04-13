@@ -28,9 +28,9 @@
 
           <input disabled type="file" class="form-control" id="fileInput" name="fileInput" accept="image/png, image/jpeg, image/gif">
 
-          <div class="mt-1 ms-3">
+          <div class="mt-1 ms-3 me-3">
             <label for="uploadProgress" class="form-label">Upload progress:</label>
-              <div id="uploadProgress" class="progress">
+              <div id="uploadProgress" class="progress w-50">
                   <div class="progress-bar" id="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
               </div>
             <button disabled type="button" id="cancelUpload" class="btn btn-info" name="cancelUpload">Cancel</button>
@@ -64,7 +64,8 @@
             document.querySelector("#cloudURL").value = presignedURL.url;
             document.querySelector("#cloudKey").value = presignedURL.key;
             document.querySelector("#fileType").value = mimeType;
-            document.querySelector("#fileName").value = document.querySelector("#fileInput").value;
+            const tokens = document.querySelector("#fileInput").value.split("\\");
+            document.querySelector("#fileName").value = tokens[tokens.length - 1];
 
             document.querySelector("#cancelUpload").disabled = false;
             // cannot change a file until file finishes uploading or cancel is clicked
