@@ -17,4 +17,9 @@ public class MyFile {
 
     private String fileName;
     private String description;
+    private String cloudKey;
+    private String fileType;
+
+    @Transient
+    private String cloudUrl;
 }

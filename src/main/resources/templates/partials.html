@@ -27,7 +27,7 @@
                     <a th:classappend="${selectedPage == 'posts-create'} ? active" class="nav-link" href="/posts/create">Create Post</a>
                 </li>
                 <li sec:authorize="isAuthenticated()" class="nav-item">
-                    <a th:classappend="${selectedPage == 'files/upload'} ? active" class="nav-link" href="/files/upload">Files</a>
+                    <a th:classappend="${selectedPage == 'files'} ? active" class="nav-link" href="/files">Files</a>
                 </li>
                 <li class="ms-auto nav-item">
                     <span class="nav-link disabled" th:text="@{| ${userNameLabel} |}">insert logged in user name here</span>

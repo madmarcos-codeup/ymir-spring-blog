@@ -1,11 +1,15 @@
 package docrob.ymirspringblog.services;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
@@ -14,6 +18,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.UUID;
 
 @Service
@@ -26,8 +31,47 @@ public class S3Helper {
     @Value("${aws.s3.bucket}")
     private String bucketName;
 
-    public String getUploadPresignedURL(String mimeType) {
-        String url = "";
+//    public String getSignedURL(String fileName) {
+//        java.util.Date expiration = new java.util.Date();
+//        long expTimeMillis = Instant.now().toEpochMilli();
+//        expTimeMillis += 1000 * 60 * 5; // default to 5 minute expiration
+//        expiration.setTime(expTimeMillis);
+//
+//        // Generate the presigned URL.
+//        log.info("Generating pre-signed URL.");
+//        GeneratePresignedUrlRequest generatePresignedUrlRequest =
+//                new GeneratePresignedUrlRequest(bucket, fileName)
+//                        .withMethod(HttpMethod.GET)
+//                        .withExpiration(expiration);
+//        URL url = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
+//        return url.toString();
+//    }
+
+    public String getDownloadPresignedURL(String keyName) {
+        EnvironmentVariableCredentialsProvider credentialsProvider = EnvironmentVariableCredentialsProvider.create();
+        Region region = Region.US_EAST_2;
+        S3Presigner presigner = S3Presigner.builder()
+                .region(region)
+                .credentialsProvider(credentialsProvider)
+                .build();
+
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(keyName)
+                .build();
+
+        GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(60))
+                .getObjectRequest(getObjectRequest)
+                .build();
+
+        PresignedGetObjectRequest presignedGetObjectRequest = presigner.presignGetObject(getObjectPresignRequest);
+        String url = presignedGetObjectRequest.url().toString();
+        return url;
+    }
+
+    public PresignUrlInfo getUploadPresignedURL(String mimeType) {
+        PresignUrlInfo info = new PresignUrlInfo();
         try {
             String keyName = UUID.randomUUID().toString();
 //            String imageLocation = "/Users/markrobinson/Desktop/dude.gif";
@@ -41,12 +85,14 @@ public class S3Helper {
                     .build();
 
 //            signBucket(presigner, bucketName, keyName, pic);
-            url =  generatePresignedURL(presigner, bucketName, keyName, mimeType);
+            String url =  generatePresignedURL(presigner, bucketName, keyName, mimeType);
+            info.setUrl(url);
+            info.setKey(keyName);
             presigner.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return url;
+        return info;
     }
 
     //byte[] pic

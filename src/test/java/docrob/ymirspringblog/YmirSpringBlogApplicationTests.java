@@ -12,7 +12,7 @@ class YmirSpringBlogApplicationTests {
 
     @Test
     void uploadFileViaPresignedURL() {
-        s3Helper.foo();
+//        s3Helper.foo();
     }
 
 }

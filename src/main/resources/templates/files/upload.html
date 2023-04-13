@@ -18,8 +18,10 @@
           <textarea class="form-control" id="description" th:field="*{description}" rows="3" placeholder="Description goes here">put stuff here</textarea>
       </div>
 
-<!--      TODO: hide this eventually-->
-      <input disabled id="upload-url" type="text" class="form-control">
+      <input id="cloudKey" type="hidden" th:field="*{cloudKey}">
+      <input id="fileType" type="hidden" th:field="*{fileType}">
+
+      <input disabled id="cloudURL" type="hidden">
 
       <div class="mb-3">
           <label for="fileInput" class="form-label">Choose a file:</label>
@@ -28,7 +30,9 @@
 
           <div class="mt-1 ms-3">
             <label for="uploadProgress" class="form-label">Upload progress:</label>
-            <input disabled type="text" id="uploadProgress" name="uploadProgress">
+              <div id="uploadProgress" class="progress">
+                  <div class="progress-bar" id="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
             <button disabled type="button" id="cancelUpload" class="btn btn-info" name="cancelUpload">Cancel</button>
           </div>
       </div>
@@ -42,61 +46,68 @@
 </div>
 
 <script>
+    let xhr = undefined;
     document.addEventListener("DOMContentLoaded", function() {
-        // document.querySelector("#submitButton").disabled = false;
-        document.querySelector("#fileInput").disabled = false;
+        resetGUI();
+
+        document.querySelector("#cancelUpload").addEventListener("click", function() {
+            xhr.abort();
+            resetGUI();
+        });
 
         document.querySelector("#fileInput").addEventListener("change", async function (event) {
-            // TODO: determine file's mime type
             const mimeType = event.target.files[0].type;
 
             const presignedURL = await getPresignedURL(mimeType);
+            console.log(presignedURL)
             //can't do anything until we get a presigned url
-            document.querySelector("#upload-url").value = presignedURL.url;
+            document.querySelector("#cloudURL").value = presignedURL.url;
+            document.querySelector("#cloudKey").value = presignedURL.key;
+            document.querySelector("#fileType").value = mimeType;
+            document.querySelector("#fileName").value = document.querySelector("#fileInput").value;
 
             document.querySelector("#cancelUpload").disabled = false;
             // cannot change a file until file finishes uploading or cancel is clicked
             document.querySelector("#fileInput").disabled = true;
 
-            const url = document.querySelector("#upload-url").value;
-            console.log("Uploading " + this.value + " to " + url);
-            uploadFile(event.target.files[0], mimeType);
+            uploadFile(presignedURL.url, event.target.files[0], mimeType);
         })
     });
 
-    async function uploadFile(file, mimeType) {
-        const url = document.querySelector("#upload-url").value;
-        await fetch(url, {
-            method: "PUT",
-            headers:
-                {
-                    'Content-Type': mimeType
-                },
-            body: file
-        }).then(function(response) {
-            console.log("response code is " + response.status);
-            document.querySelector("#submitButton").disabled = false;
-        });
-        // const reader = new FileReader()
-        // reader.onload = handleFileRead;
-        // reader.readAsBinaryString(file);
+    function resetGUI() {
+        document.querySelector("#submitButton").disabled = true;
+        document.querySelector("#cancelUpload").disabled = true;
+        const fileInput = document.querySelector("#fileInput");
+        fileInput.disabled = false;
+        fileInput.value = "";
+        document.querySelector("#cloudURL").value = "";
+        document.querySelector("#cloudKey").value = "";
+        document.querySelector("#fileType").value = "";
+
+        // clear progress bar
+        const progressBar = document.querySelector("#progress-bar");
+        progressBar.innerHTML = "";
+        progressBar.setAttribute("aria-valuenow", "0");
     }
 
-    // async function handleFileRead(event) {
-    //     console.log(event.target.result);
-    //     const url = document.querySelector("#upload-url").value;
-    //     await fetch(url, {
-    //         method: "PUT",
-    //         headers:
-    //             {
-    //                 'Content-Type': 'image/gif'
-    //             },
-    //         body: event.target.result
-    //     }).then(function(response) {
-    //         console.log("response code is " + response.status);
-    //         document.querySelector("#submitButton").disabled = false;
-    //     });
-    // }
+    async function uploadFile(url, file, mimeType) {
+        // must use xmlhttprequest instead of fetch for upload progress tracking
+        // https://javascript.info/fetch-progress
+        xhr = new XMLHttpRequest();
+        xhr.open('PUT', url);
+        xhr.setRequestHeader('Content-Type', mimeType);
+        xhr.onloadend = function() {
+            console.log("response code is " + xhr.status);
+            document.querySelector("#submitButton").disabled = false;
+        }
+        xhr.upload.onprogress = function(event) {
+            // document.querySelector("#uploadProgress").value = `Uploaded ${event.loaded} of ${event.total}`;
+            const amt = Math.round(event.loaded / event.total * 100);
+            document.querySelector("#progress-bar").innerHTML = amt + "%";
+            document.querySelector("#progress-bar").style.width = amt + "%";
+        };
+        xhr.send(file);
+    }
 
     function getPresignedURL(mimeType) {
         const url = `/files/presign?mimeType=` + mimeType;

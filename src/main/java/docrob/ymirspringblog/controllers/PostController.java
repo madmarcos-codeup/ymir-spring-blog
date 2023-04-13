@@ -27,6 +27,12 @@ public class PostController {
     private final UserRepository userDao;
     private final EmailService emailService;
 
+    @DeleteMapping("/{postId}")
+    public String deletePost(@PathVariable Long postId) {
+        userDao.deletePostById(postId);
+        return "redirect:/posts";
+    }
+
     @GetMapping
     public String allPosts(@RequestParam @Nullable String search, Model model) {
 //        try {

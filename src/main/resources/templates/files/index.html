@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <header th:insert="partials :: head"></header>
+    <title>All Files</title>
+</head>
+
+<body>
+<nav th:replace="partials :: navbar">
+</nav>
+
+<div class="container-fluid">
+
+<h1>All Files</h1>
+<h6><a href="/files/upload">Upload file</a></h6>
+<table class="mt-3 table table-striped">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Type</th>
+    </tr>
+    </thead>
+    <tr th:each="file : ${files}">
+        <td>
+            <a th:href="@{|${file.cloudUrl}|}" th:text="${file.fileName}"></a>
+        </td>
+        <td th:text="${file.description}"></td>
+        <td th:text="${file.fileType}"></td>
+<!--        <td th:if="${userName != post.creator.name}">-->
+<!--        </td>-->
+<!--        <td th:if="${userName != post.creator.name}">-->
+<!--        </td>-->
+    </tr>
+</table>
+
+<script src="/keys.js"></script>
+<footer th:replace="partials :: footer">
+</footer>
+
+</div>
+
+</body>
+</html>
