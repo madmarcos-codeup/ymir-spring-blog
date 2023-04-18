@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <header th:insert="partials :: head"></header>
+    <title>Talk</title>
+</head>
+
+<body>
+<nav th:replace="partials :: navbar">
+</nav>
+
+<div class="container-fluid">
+
+    <h1>All Posts</h1>
+
+    <table class="mt-3 table table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tr th:each="friend : ${friends}">
+            <td>
+                <a th:href="@{|/talk/with/${friend.id}|}" th:text="${friend.name}"></a>
+            </td>
+            <td>
+            </td>
+        </tr>
+    </table>
+
+    <footer th:replace="partials :: footer">
+    </footer>
+
+</div>
+
+</body>
+</html>

@@ -1,5 +1,6 @@
 package docrob.ymirspringblog.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,7 +29,17 @@ public class User {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator")
     @ToString.Exclude
+    @JsonIgnore
     private List<Post> posts;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name="follows",
+            joinColumns={@JoinColumn(name="followee_id")},
+            inverseJoinColumns={@JoinColumn(name="follower_id")}
+    )
+    @JsonIgnore
+    private List<User> followers;
 
     public User(User copy) {
         id = copy.id;

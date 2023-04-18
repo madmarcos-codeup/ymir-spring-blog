@@ -28,9 +28,16 @@ public class PostController {
     private final EmailService emailService;
 
     @DeleteMapping("/{postId}")
+    @ResponseBody
     public String deletePost(@PathVariable Long postId) {
+        // make sure only the post's creator can delete it
+        // 1. get the id of the currently logged in user
+        // 2. fetch the post from the dao to be deleted
+        // 3. if the post creator's id is different than the logged in user
+        //      return a 403
+        // 4. otherwise you are the creator so you can delete it
         userDao.deletePostById(postId);
-        return "redirect:/posts";
+        return "ok";
     }
 
     @GetMapping
@@ -67,6 +74,9 @@ public class PostController {
         model.addAttribute("userNameLabel", LoginFunctions.getLoggedInUserNameMenuLabel());
 
         Post post = postDao.findById(postId).get();
+        if(post == null) {
+            return "redirect:/error";
+        }
         model.addAttribute("post", post);
         return "posts/show";
     }

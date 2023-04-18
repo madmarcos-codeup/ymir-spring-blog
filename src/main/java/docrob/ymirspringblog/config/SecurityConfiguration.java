@@ -1,6 +1,7 @@
 package docrob.ymirspringblog.config;
 
 import docrob.ymirspringblog.services.UserDetailsLoader;
+import jakarta.servlet.ServletException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -52,14 +53,16 @@ public class SecurityConfiguration {
                         "/posts/create",
                         "/posts/{id}/edit",
                         "/posts/{id}/delete",
-                        "/files/**"
+                        "/files/**",
+                        "/my/logout",
+                        "/talk/**"
                 )
                 .authenticated()
 
                 /* Pages that can be viewed without having to log in */
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/", "/denied", "/posts", "/posts/{id}", "/sign-up", "/css/**", "/js/**", "/keys.js") // anyone can see home, the ads pages, and sign up
+                .requestMatchers("/", "/home/hello", "/denied", "/error", "/posts", "/posts/{id}", "/sign-up", "/css/**", "/js/**", "/keys.js") // anyone can see home, the ads pages, and sign up
                 .permitAll()
 
         ;

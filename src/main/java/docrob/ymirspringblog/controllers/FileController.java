@@ -70,6 +70,7 @@ public class FileController {
         if(mimeType == null) {
             throw new RuntimeException("ERROR: mimeType query parameter required!");
         }
+//        return "help";
         PresignUrlInfo info = s3Helper.getUploadPresignedURL(mimeType);
 //        System.out.println(url);
         return "{ \"url\" : \"" + info.getUrl() + "\",\"key\":\"" + info.getKey() + "\"}";

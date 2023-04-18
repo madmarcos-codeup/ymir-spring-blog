@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <header th:insert="partials :: head"></header>
+    <title>Talk</title>
+</head>
+
+<body>
+<nav th:replace="partials :: navbar">
+</nav>
+
+<div class="container-fluid">
+
+    <input type="hidden" id="friendId" th:value="${friend.id}">
+    <input type="hidden" id="friendEmail" th:value="${friend.name}">
+    <input type="hidden" id="friendName" th:value="${friend.email}">
+
+    <!-- container element in which TalkJS will display a chat UI -->
+    <div id="talkjs-container" style="width: 90%; margin: 30px; height: 500px">
+        <i>Loading chat...</i>
+    </div>
+
+    <footer th:replace="partials :: footer">
+    </footer>
+
+</div>
+
+<script>
+    (function(t,a,l,k,j,s){
+        s=a.createElement('script');s.async=1;s.src="https://cdn.talkjs.com/talk.js";a.head.appendChild(s)
+        ;k=t.Promise;t.Talk={v:3,ready:{then:function(f){if(k)return new k(function(r,e){l.push([f,r,e])});l
+                    .push([f])},catch:function(){return k&&new k()},c:l}};})(window,document,[]);
+</script>
+
+<script>
+    Talk.ready.then(async function () {
+        // get my info from the backend using fetch
+
+        let myMe = await fetch("/talk/me", {
+            method: "GET"
+        }).then(function(request) {
+            return request.json();
+        })
+        let me = new Talk.User({
+            id: myMe.id,
+            name: myMe.name,
+            email: myMe.email,
+            photoUrl: 'https://talkjs.com/images/avatar-1.jpg',
+            welcomeMessage: 'Hey there! How are you? :-)',
+        });
+        window.talkSession = new Talk.Session({
+            appId: 'tU84aRwM',
+            me: me,
+        });
+
+        var friendId = document.querySelector("#friendId").value;
+        var friendName = document.querySelector("#friendName").value;
+        var friendEmail = document.querySelector("#friendEmail").value;
+
+        var other = new Talk.User({
+            id: friendId,
+            name: friendName,
+            email: friendEmail,
+            photoUrl: 'https://talkjs.com/images/avatar-5.jpg',
+            welcomeMessage: 'Hey, how can I help?',
+        });
+
+        var conversation = talkSession.getOrCreateConversation(
+            Talk.oneOnOneId(me, other)
+        );
+        conversation.setParticipant(me);
+        conversation.setParticipant(other);
+
+        var inbox = talkSession.createInbox({ selected: conversation });
+        inbox.mount(document.getElementById('talkjs-container'));
+    });
+</script>
+</body>
+</html>
