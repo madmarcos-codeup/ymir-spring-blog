@@ -1,5 +1,6 @@
 package docrob.ymirspringblog.controllers;
 
+import docrob.ymirspringblog.misc.LoginFunctions;
 import docrob.ymirspringblog.models.User;
 import docrob.ymirspringblog.repositories.UserRepository;
 import lombok.AllArgsConstructor;
@@ -22,14 +23,14 @@ public class TalkController {
 
     @GetMapping
     public String friendList(Model model) {
+        model.addAttribute("userNameLabel", LoginFunctions.getLoggedInUserNameMenuLabel());
+        model.addAttribute("userName", LoginFunctions.getLoggedInUserName());
+        model.addAttribute("selectedPage", "talk");
+
         List<User> friends = userDao.findAll();
+        friends.get(0).setShowThis(true);
         model.addAttribute("friends", friends);
         return "/talk/index";
-    }
-
-    @GetMapping(value = "/show")
-    public String showTalk() {
-        return "/talk/show";
     }
 
     @GetMapping(value = "/me", produces = "application/json")
@@ -41,6 +42,10 @@ public class TalkController {
 
     @GetMapping(value = "/with/{friendId}")
     public String talkWith(@PathVariable Long friendId, Model model) {
+        model.addAttribute("userNameLabel", LoginFunctions.getLoggedInUserNameMenuLabel());
+        model.addAttribute("userName", LoginFunctions.getLoggedInUserName());
+        model.addAttribute("selectedPage", "talk");
+
         User friend = userDao.findById(friendId).get();
         model.addAttribute("friend", friend);
         return "/talk/show";

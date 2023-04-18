@@ -8,10 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class APIKeys {
 
     @Value("${talkjs.appkey}")
-    private static String talkJSAppKey;
+    public String TALKJS_APP_KEY;
 
 
-    public static String getTalkJSAppKey() {
-        return "tU84aRwM";
-    }
 }

@@ -41,6 +41,12 @@ public class User {
     @JsonIgnore
     private List<User> followers;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "friend1")
+    private List<Friend> friends;
+
+    @Transient
+    private boolean showThis = false;
+
     public User(User copy) {
         id = copy.id;
         email = copy.email;

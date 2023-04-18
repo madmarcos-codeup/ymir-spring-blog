@@ -23,7 +23,7 @@
         </thead>
         <tr th:each="friend : ${friends}">
             <td>
-                <a th:href="@{|/talk/with/${friend.id}|}" th:text="${friend.name}"></a>
+                <a th:href="@{|/talk/with/${friend.id}|}" th:text="@{|${friend.name} ${friend.showThis} ---|}"></a>
             </td>
             <td>
             </td>

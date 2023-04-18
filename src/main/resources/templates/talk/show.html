@@ -13,8 +13,8 @@
 <div class="container-fluid">
 
     <input type="hidden" id="friendId" th:value="${friend.id}">
-    <input type="hidden" id="friendEmail" th:value="${friend.name}">
-    <input type="hidden" id="friendName" th:value="${friend.email}">
+    <input type="hidden" id="friendEmail" th:value="${friend.email}">
+    <input type="hidden" id="friendName" th:value="${friend.name}">
 
     <!-- container element in which TalkJS will display a chat UI -->
     <div id="talkjs-container" style="width: 90%; margin: 30px; height: 500px">
@@ -50,7 +50,7 @@
             welcomeMessage: 'Hey there! How are you? :-)',
         });
         window.talkSession = new Talk.Session({
-            appId: 'tU84aRwM',
+            appId: TALKJS_APIKEY,
             me: me,
         });
 

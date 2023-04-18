@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 //@ResponseBody
-@RequestMapping(path = "/home")
+@RequestMapping(path = "/")
 public class HomeController {
-    @GetMapping(value = "/hello", produces = "text/plain")
+    @GetMapping(value = "/home/hello", produces = "text/plain")
     @ResponseBody
     public String sayHello(@RequestParam(required = false) String name) {
         String response = "Hello ";

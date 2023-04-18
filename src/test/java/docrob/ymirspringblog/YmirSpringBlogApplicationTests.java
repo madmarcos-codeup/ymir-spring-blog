@@ -1,6 +1,8 @@
 package docrob.ymirspringblog;
 
+import docrob.ymirspringblog.models.Friend;
 import docrob.ymirspringblog.models.User;
+import docrob.ymirspringblog.repositories.FriendRepository;
 import docrob.ymirspringblog.repositories.PostRepository;
 import docrob.ymirspringblog.repositories.UserRepository;
 import docrob.ymirspringblog.services.S3Helper;
@@ -36,6 +38,9 @@ class YmirSpringBlogApplicationTests {
     private S3Helper s3Helper;
 
     @Autowired
+    private FriendRepository friendDao;
+
+    @Autowired
     private UserRepository userDao;
 
     @Test
@@ -46,6 +51,14 @@ class YmirSpringBlogApplicationTests {
     @Test
     void uploadFileViaPresignedURL() {
 //        s3Helper.foo();
+    }
+
+    @Test
+    public void friends() {
+        List<Friend> friends = friendDao.findAll();
+        for(Friend friend : friends) {
+            System.out.println(friend.getFriend1().getUsername() + " -> " + friend.getFriend2().getUsername());
+        }
     }
 
     @Test

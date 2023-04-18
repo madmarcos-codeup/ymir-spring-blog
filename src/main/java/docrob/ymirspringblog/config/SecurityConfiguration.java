@@ -55,7 +55,8 @@ public class SecurityConfiguration {
                         "/posts/{id}/delete",
                         "/files/**",
                         "/my/logout",
-                        "/talk/**"
+                        "/talk/**",
+                        "/me/friends"
                 )
                 .authenticated()
 
