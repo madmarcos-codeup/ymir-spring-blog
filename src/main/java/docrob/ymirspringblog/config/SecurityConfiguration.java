@@ -53,7 +53,6 @@ public class SecurityConfiguration {
                         "/posts/create",
                         "/posts/{id}/edit",
                         "/posts/{id}/delete",
-                        "/files/**",
                         "/my/logout",
                         "/talk/**",
                         "/me/friends"
@@ -63,8 +62,23 @@ public class SecurityConfiguration {
                 /* Pages that can be viewed without having to log in */
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/", "/home/hello", "/denied", "/error", "/posts", "/posts/{id}", "/sign-up", "/css/**", "/js/**", "/keys.js") // anyone can see home, the ads pages, and sign up
+                .requestMatchers("/",
+                        "/home/hello",
+                        "/denied",
+                        "/error",
+                        "/posts",
+                        "/posts/{id}",
+                        "/sign-up",
+                        "/css/**",
+                        "/js/**",
+                        "/keys.js",
+                        "/files/**"
+                        ) // anyone can see home, the ads pages, and sign up
                 .permitAll()
+
+                .and()
+                .csrf()
+                .ignoringRequestMatchers("/files/multipart/complete")
 
         ;
         return http.build();

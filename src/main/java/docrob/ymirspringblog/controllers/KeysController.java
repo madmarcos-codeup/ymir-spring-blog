@@ -14,7 +14,6 @@ public class KeysController {
     @GetMapping(value = "/keys.js", produces = "text/javascript")
     @ResponseBody
     public String getKeys() {
-        return "const msg = 'help me!';\n" +
-            "const TALKJS_APIKEY = '" + apiKeys.TALKJS_APP_KEY + "';";
+        return "const TALKJS_APIKEY = '" + apiKeys.TALKJS_APP_KEY + "';\n";
     }
 }
