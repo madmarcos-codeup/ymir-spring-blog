@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <header th:insert="partials :: head"></header>
+    <title>Upload Filestack File</title>
+</head>
+<body>
+<nav th:replace="partials :: navbar">
+</nav>
+
+<div class="container-fluid">
+
+    <h1>Upload a file to Filestack</h1>
+
+    <div id="photo-url"></div>
+
+    <footer th:replace="partials :: footer">
+    </footer>
+
+    <script src="//static.filestackapi.com/filestack-js/3.26.1/filestack.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const client = filestack.init(FILESTACK_API_KEY);
+            const options = {
+                onUploadDone: function(metaData) {
+
+                    //console.log(metaData.filesUploaded[0].url);
+                    document.querySelector("#photo-url").innerText = metaData.filesUploaded[0].url;
+                }
+            };
+            client.picker(options).open();
+        })
+    </script>
+
+</div>
+
+
+<script>
+
+</script>
+</body>
+</html>

@@ -42,6 +42,8 @@ public class PostController {
 
     @GetMapping
     public String allPosts(@RequestParam @Nullable String search, Model model) {
+//        model.addAttribute("myVar", "hello");
+
 //        try {
 //            URL url = new URL("https://www.themealdb.com/api/json/v1/1/lookup.php?i=53065");
 //            HttpURLConnection connection = (HttpURLConnection) url.openConnection();

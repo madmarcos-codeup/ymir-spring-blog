@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="eng">
 
 <head>
-  <header th:insert="partials :: head"></header>
-  <title>Talk</title>
+  <meta th:insert="partials :: head">
+  <title>PostMonster</title>
 </head>
 
 <body>
-<nav th:replace="partials :: navbar">
-</nav>
+  <nav th:replace="partials :: navbar">
+  </nav>
 
 <div class="container-fluid">
   <h1>This is the home page</h1>

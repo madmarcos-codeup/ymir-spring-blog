@@ -10,6 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedUploadPartRequest;
 import software.amazon.awssdk.services.s3.presigner.model.UploadPartPresignRequest;
@@ -48,8 +50,45 @@ public class FileController {
         return "/files/index";
     }
 
+    @GetMapping("/{fileId}/delete")
+    public String deleteFile(@PathVariable Long fileId) {
+        // 1. get the id of the currently logged in user
+        User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // 2. fetch the post from the dao to be deleted
+        MyFile file = fileDao.findById(fileId).get();
+
+        // 3. if the post creator's id is different than the logged in user
+        //      return a 403
+        if(loggedInUser.getId() != file.getCreator().getId()) {
+            return "redirect:/denied";
+        }
+
+        // 4. otherwise you are the creator so you can delete it
+//        userDao.deletePostById(postId);
+        // delete from aws s3
+        try {
+            DeleteObjectRequest request = DeleteObjectRequest.builder()
+                            .bucket(s3Helper.BUCKET)
+                            .key(file.getCloudKey())
+                            .build();
+            s3Helper.getS3Client().deleteObject(request);
+        } catch (Exception e) {
+            // Amazon S3 couldn't be contacted for a response, or the client
+            // couldn't parse the response from Amazon S3.
+            e.printStackTrace();
+            return "redirect:/files";
+        }
+
+        fileDao.delete(file);
+
+        return "redirect:/files";
+    }
+
     @PostMapping("/create")
     public String createFile(@ModelAttribute MyFile myFile) {
+        User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        myFile.setCreator(loggedInUser);
         fileDao.save(myFile);
         return "redirect:/files";
     }
@@ -76,7 +115,7 @@ public class FileController {
     public MyMultiPartUpload startMultipart() {
         String key = UUID.randomUUID().toString();
         CreateMultipartUploadRequest createMultipartUploadRequest = CreateMultipartUploadRequest.builder()
-                .bucket(S3Helper.BUCKET)
+                .bucket(s3Helper.BUCKET)
                 .key(key)
                 .build();
 
@@ -92,7 +131,7 @@ public class FileController {
         @RequestParam(required = true) String partNum) {
 
         UploadPartRequest uRequest = UploadPartRequest.builder()
-                .bucket(S3Helper.BUCKET)
+                .bucket(s3Helper.BUCKET)
                 .key(key)
                 .uploadId(uploadId)
                 .partNumber(Integer.parseInt(partNum))
@@ -117,7 +156,7 @@ public class FileController {
 
         try {
             CompleteMultipartUploadRequest request = CompleteMultipartUploadRequest.builder()
-                    .bucket(S3Helper.BUCKET)
+                    .bucket(s3Helper.BUCKET)
                     .key(formData.getKey())
                     .uploadId(formData.getUploadId())
                     .multipartUpload(CompletedMultipartUpload.builder()
@@ -126,7 +165,9 @@ public class FileController {
                     .build();
             CompleteMultipartUploadResponse cResponse = s3Helper.getS3Client().completeMultipartUpload(request);
 
-            return "{\"key\";\"" + cResponse.key() + "\",\"eTag\":\"" + cResponse.eTag() + "\"}";
+            String json = "{\"key\":\"" + cResponse.key() + "\",\"eTag\":" + cResponse.eTag() + "}";
+            System.out.println(json);
+            return json;
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -146,5 +187,10 @@ public class FileController {
         PresignUrlInfo info = s3Helper.getUploadPresignedURL(mimeType);
 //        System.out.println(url);
         return "{ \"url\" : \"" + info.getUrl() + "\",\"key\":\"" + info.getKey() + "\"}";
+    }
+
+    @GetMapping("/filestack/upload")
+    public String createFilestackFile() {
+        return "files/filestack_upload";
     }
 }

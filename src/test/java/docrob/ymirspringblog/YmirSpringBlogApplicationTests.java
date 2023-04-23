@@ -1,18 +1,13 @@
 package docrob.ymirspringblog;
 
-import docrob.ymirspringblog.models.Friend;
-import docrob.ymirspringblog.models.MyFilePart;
-import docrob.ymirspringblog.models.User;
+import docrob.ymirspringblog.models.*;
 import docrob.ymirspringblog.repositories.FriendRepository;
 import docrob.ymirspringblog.repositories.PostRepository;
 import docrob.ymirspringblog.repositories.UserRepository;
 import docrob.ymirspringblog.services.S3Helper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -28,14 +23,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 @SpringBootTest
 class YmirSpringBlogApplicationTests {
     @Autowired
-    private PostRepository postRepository;
+    private PostRepository postDao;
 
     private final int SIGNATURE_DURATION = 10;
 
@@ -49,8 +42,14 @@ class YmirSpringBlogApplicationTests {
     private UserRepository userDao;
 
     @Test
+    public void friendPosts() {
+        List<PostDTO> posts = postDao.findMyFriendsPosts(1L);
+        System.out.println(posts);
+    }
+
+    @Test
     public void foo() {
-        postRepository.deleteById(3L);
+        postDao.deleteById(3L);
     }
 
     @Test
@@ -101,7 +100,7 @@ class YmirSpringBlogApplicationTests {
         S3Presigner presigner = s3Helper.getPresigner();
 
         CreateMultipartUploadRequest createMultipartUploadRequest = CreateMultipartUploadRequest.builder()
-                .bucket(S3Helper.BUCKET)
+                .bucket(s3Helper.BUCKET)
                 .key(key)
                 .build();
 
@@ -145,7 +144,7 @@ class YmirSpringBlogApplicationTests {
                 // get the multipart upload url
                 // try to get a multipart upload presigned url for piece 1
                 UploadPartRequest uRequest = UploadPartRequest.builder()
-                        .bucket(S3Helper.BUCKET)
+                        .bucket(s3Helper.BUCKET)
                         .key(key)
                         .uploadId(uploadId)
                         .partNumber(partNum)
@@ -200,7 +199,7 @@ class YmirSpringBlogApplicationTests {
 
         try {
             CompleteMultipartUploadRequest request = CompleteMultipartUploadRequest.builder()
-                    .bucket(S3Helper.BUCKET)
+                    .bucket(s3Helper.BUCKET)
                     .key(key)
                     .uploadId(uploadId)
                     .multipartUpload(CompletedMultipartUpload.builder()

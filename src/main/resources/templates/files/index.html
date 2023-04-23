@@ -12,14 +12,16 @@
 
 <div class="container-fluid">
 
-<h1>All Files</h1>
-<h6><a href="/files/upload">Upload file</a></h6>
+<h1>All S3 Files</h1>
+<h6><a href="/files/upload">Upload file to S3</a></h6>
+<h6><a href="/files/filestack/upload">Upload file to Filestack</a></h6>
 <table class="mt-3 table table-striped">
     <thead>
     <tr>
         <th>Name</th>
         <th>Description</th>
         <th>Type</th>
+        <th></th>
     </tr>
     </thead>
     <tr th:each="file : ${files}">
@@ -28,14 +30,18 @@
         </td>
         <td th:text="${file.description}"></td>
         <td th:text="${file.fileType}"></td>
-<!--        <td th:if="${userName != post.creator.name}">-->
+
+        <td>
+            <a th:if="${userName == file.creator.name}" th:href="@{|/files/${file.id}/delete|}">Delete</a>
+        </td>
+
+        <!--        <td th:if="${userName != post.creator.name}">-->
 <!--        </td>-->
 <!--        <td th:if="${userName != post.creator.name}">-->
 <!--        </td>-->
     </tr>
 </table>
 
-<script src="/keys.js"></script>
 <footer th:replace="partials :: footer">
 </footer>
 

@@ -20,6 +20,9 @@ public class MyFile {
     private String cloudKey;
     private String fileType;
 
+    @ManyToOne
+    private User creator;
+
     @Transient
     private String cloudUrl;
 }

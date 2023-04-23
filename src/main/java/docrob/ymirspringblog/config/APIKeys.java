@@ -10,5 +10,7 @@ public class APIKeys {
     @Value("${talkjs.appkey}")
     public String TALKJS_APP_KEY;
 
+    @Value("${filestack.apikey}")
+    public String FILESTACK_API_KEY;
 
 }

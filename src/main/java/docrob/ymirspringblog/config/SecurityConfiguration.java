@@ -55,7 +55,8 @@ public class SecurityConfiguration {
                         "/posts/{id}/delete",
                         "/my/logout",
                         "/talk/**",
-                        "/me/friends"
+                        "/me/friends",
+                        "/files/**"
                 )
                 .authenticated()
 
@@ -72,7 +73,7 @@ public class SecurityConfiguration {
                         "/css/**",
                         "/js/**",
                         "/keys.js",
-                        "/files/**"
+                        "/favicon.ico"
                         ) // anyone can see home, the ads pages, and sign up
                 .permitAll()
 

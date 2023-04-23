@@ -52,7 +52,7 @@ public class S3Helper {
 
     public static final Region REGION = Region.US_EAST_2;
 
-    public static String BUCKET = "ymir-demo";
+    public String BUCKET = "ymir-demo";
 
 //    @Autowired
 //    private AmazonS3 s3Client;
